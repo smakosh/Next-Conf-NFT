@@ -15,11 +15,19 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 import screenshot from '@lib/screenshot';
 import { SITE_URL, SAMPLE_TICKET_NUMBER } from '@lib/constants';
 import redis from '@lib/redis';
 
 export default async function ticketImages(req: NextApiRequest, res: NextApiResponse) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  await NextCors(req, res, {
+    methods: ['POST', 'GET'],
+    origin: '*',
+    optionsSuccessStatus: 200
+  });
+
   let url: string;
   const { username } = req.query || {};
   if (username) {

@@ -83,8 +83,6 @@ export default function TicketActions({ username }: Props) {
         const added = await client.add(data);
         const url = `https://ipfs.infura.io/ipfs/${added.path}`;
 
-        console.log(added, url);
-
         const contract = new ethers.Contract(
           '0xb05FFAe107c0113923bFf2150BB9D400e76896ea',
           VercelNFT.abi,
