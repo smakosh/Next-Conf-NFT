@@ -64,33 +64,40 @@ export default function TicketActions({ username }: Props) {
     if (typeof (window as any).ethereum !== 'undefined' && userAddress) {
       if (imgReady) return;
 
-      e.preventDefault();
-      downloadLink.current = e.currentTarget;
-      // Wait for the image download to finish
-      setLoading(true);
-      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-      const signer = provider.getSigner();
+      try {
+        e.preventDefault();
+        downloadLink.current = e.currentTarget;
+        // Wait for the image download to finish
+        setLoading(true);
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        const signer = provider.getSigner();
 
-      const data = JSON.stringify({
-        attributes: [],
-        description: 'Next Conf 2021',
-        external_url: 'https://demo.vercel.events',
-        image: downloadUrl,
-        name: username
-      });
+        const data = JSON.stringify({
+          attributes: [],
+          description: 'Next Conf 2021',
+          external_url: 'https://demo.vercel.events',
+          image: downloadUrl,
+          name: username
+        });
 
-      const added = await client.add(data);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+        const added = await client.add(data);
+        const url = `https://ipfs.infura.io/ipfs/${added.path}`;
 
-      const contract = new ethers.Contract(
-        '0xb05FFAe107c0113923bFf2150BB9D400e76896ea',
-        VercelNFT.abi,
-        signer
-      );
+        console.log(added, url);
 
-      const transaction = await contract.createToken(url);
-      await transaction.wait();
-      setLoading(false);
+        const contract = new ethers.Contract(
+          '0xb05FFAe107c0113923bFf2150BB9D400e76896ea',
+          VercelNFT.abi,
+          signer
+        );
+
+        const transaction = await contract.createToken(url);
+        await transaction.wait();
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
     }
   };
 
