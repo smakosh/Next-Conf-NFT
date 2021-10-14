@@ -75,7 +75,7 @@ export default function TicketActions({ username }: Props) {
         const data = JSON.stringify({
           attributes: [],
           description: 'Next Conf 2021',
-          external_url: 'https://demo.vercel.events',
+          external_url: 'https://mint-conf.smakosh.com',
           image: downloadUrl,
           name: username
         });
@@ -86,7 +86,7 @@ export default function TicketActions({ username }: Props) {
         console.log(added, url);
 
         const contract = new ethers.Contract(
-          '0xb05FFAe107c0113923bFf2150BB9D400e76896ea',
+          '0x2478ed79828a01aDB854BE67c904e0043F9558C4',
           VercelNFT.abi,
           signer
         );
