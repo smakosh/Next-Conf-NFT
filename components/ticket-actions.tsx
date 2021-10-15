@@ -37,6 +37,7 @@ export default function TicketActions({ username }: Props) {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const [imgReady, setImgReady] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [minting, setMinting] = useState(false);
   const downloadLink = useRef<HTMLAnchorElement>();
   const permalink = encodeURIComponent(`${SITE_URL}/tickets/${username}`);
   const text = encodeURIComponent(TWEET_TEXT);
@@ -67,7 +68,7 @@ export default function TicketActions({ username }: Props) {
 
       downloadLink.current = e.currentTarget;
       // Wait for the image download to finish
-      setLoading(true);
+      setMinting(true);
       const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       const signer = provider.getSigner();
 
@@ -75,7 +76,7 @@ export default function TicketActions({ username }: Props) {
         attributes: [],
         description: 'Next Conf 2021',
         external_url: 'https://demo.vercel.events',
-        image: downloadUrl,
+        image: `${process.env.NEXT_PUBLIC_SITE_ORIGIN}/api/ticket-images/${username}`,
         name: username
       });
 
@@ -90,7 +91,7 @@ export default function TicketActions({ username }: Props) {
 
       const transaction = await contract.createToken(url);
       await transaction.wait();
-      setLoading(false);
+      setMinting(false);
     }
   };
 
@@ -182,7 +183,7 @@ export default function TicketActions({ username }: Props) {
           onClick={e => createNFT(e)}
           download="ticket.png"
         >
-          {loading ? (
+          {minting ? (
             <LoadingDots size={4} />
           ) : (
             <>
