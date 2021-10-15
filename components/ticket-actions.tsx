@@ -26,7 +26,6 @@ import LoadingDots from './loading-dots';
 import styleUtils from './utils.module.css';
 import styles from './ticket-actions.module.css';
 import { ethers } from 'ethers';
-import { create as ipfsHttpClient } from 'ipfs-http-client';
 import VercelNFT from 'artifacts/contracts/VercelNFT.sol/VercelNFT.json';
 
 type Props = {
@@ -43,10 +42,6 @@ export default function TicketActions({ username }: Props) {
   const tweetUrl = `https://twitter.com/intent/tweet?url=${permalink}&via=vercel&text=${text}`;
   const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${permalink}`;
   const downloadUrl = `/api/ticket-images/${username}`;
-
-  const client = ipfsHttpClient({
-    url: 'https://ipfs.infura.io:5001/api/v0'
-  });
 
   const requestAccount = async () => {
     if ((window as any).ethereum) {
@@ -73,15 +68,46 @@ export default function TicketActions({ username }: Props) {
         const signer = provider.getSigner();
 
         const data = JSON.stringify({
-          attributes: [],
-          description: 'Next Conf 2021',
-          external_url: 'https://mint-conf.smakosh.com',
-          image: downloadUrl,
-          name: username
+          pinataOptions: {        
+            cidVersion: 0,
+            customPinPolicy: [{
+              id: 'FRA1',
+              desiredReplicationCount: 1
+              },
+              {
+                id: 'NYC1',
+                desiredReplicationCount: 2
+            }]
+          },
+          pinataMetadata: {
+            keyvalues: {
+              attributes: [],
+              description: 'Next Conf 2021',
+              external_url: 'https://mint-conf.smakosh.com',
+              image: downloadUrl,
+              name: username,
+            }
+          },
+          pinataContent: {
+            attributes: [],
+            description: 'Next Conf 2021',
+            external_url: 'https://mint-conf.smakosh.com',
+            image: downloadUrl,
+            name: username,
+          }
         });
 
-        const added = await client.add(data);
-        const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+        const res = await fetch(`https://api.pinata.cloud/pinning/pinJSONToIPFS`, {
+          headers: {
+            pinata_api_key: '1468a2a458583a069d68',
+            pinata_secret_api_key: '86fb094f13a2b5c6b91b43900ef692dabfd27357935af44e5ec3bd14a99db6bc'
+          },
+          body: data,
+          method: 'POST'
+        });
+
+        const added = await res.json()
+        const url = `https://gateway.pinata.cloud/ipfs/${added.IpfsHash}`;
 
         console.log(added, url);
 
