@@ -176,10 +176,10 @@ export default function TicketActions({ username }: Props) {
             styles.third,
             'icon-button',
             {
-              [styles.loading]: loading
+              [styles.loading]: minting
             }
           )}
-          href={loading ? undefined : downloadUrl}
+          href={minting ? undefined : downloadUrl}
           onClick={e => createNFT(e)}
           download="ticket.png"
         >
